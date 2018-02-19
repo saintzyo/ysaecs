@@ -6,11 +6,15 @@ phases:
       - echo Nothing to do in the install phase...
   pre_build:
     commands:
-      - docker login -u AWS -p eyJwYXlsb2FkIjoidkQ3TjVGMUNMSXdvN3BvTk1ud2xralhEZVdsUGxMbFZXYkpBWHpvZ3gwY3VVeWNybG5BaDFmV0JWMFlsYkRTTHh5ODdTcWNpb1R6QUs3dVBSNlpaUzAxa3N6eHRPUEZDWnBaVnFsVVlXNG5BekZMS3NlclBkZlMvS3JMVDA1Qit1dzN0R1BqMjBydmpNc2FlbWxYcjg0ZCtnb0d4Vjh3RE13YmlRdy9haVVaam9tOVU0bDZnTnZIVm1FS2E1Smthb2JRNlRSZlo0R2ZNbHFjWWl3SGp5NlJYa29INUcvM0JXQ1FoVzdtQTR6TnEzTmZtVFlvS0hmWllqTG5EQmllQnZEZlBDSnhuUmVyZFp3RGZ1NzhCS2lNVTEwSG03NDZxMStpMlNuM0I1N3VCanpnMnFjYVkvV00xcE1UaDMrNTE3TGdEWThxK1MrU2xQRUJRTzVOeldDa0JUdGJTL1JkVEV6MDlGcTIzenRSeHdIdWNMMHUvaDVHU2MrUitTYmRoS2ljK29qckZRaU5tUTIxYnpZNWNxTFlabC9uMDN2SUdkcFl0bzJhZHFIcEo0ZjRnMlUvRURmWG1hWGY2YnlXMmt1Nmg5YTBHN1dlLzdpdmlBRCtENlBzT2pJL2lDZzF5UXZnK3dtYkpNMVVWODFOZDBuMFRkZjhXU010M0w4WWZnOWVOZjIwNENUUWxreTNlS0lqZjVkdmIyM014RitqRExrcjlUTnBYeFhzSVhoYjdTOXZ4T1lDSXpFT3pqRGY5cHYvN3pVdm5tdldsWVI3R0xiU1FBczV1ZDZJT0dlWEZJOUhIdS84dXlaQzg4L0Y3U21Ec0VMd3N0V00vQ3BjejBKcWFJN1czWktlTDJ2RGx1d0gwRmI1T20rZ3NkTURzclFsMGE0R3dTb01WcnN2TzRSY1AvOG5GRU1OWWlJeVZHRnRiNjUxNlFZL3ZrcytkL2NRRVVKaDdlbHFYdWVUcnJleHdjU0tYYjFwcmpxWXRUWlF3NW9XZENFZ3RhbERxWldlWkphVmtqbEVPUW5pTGxHbnVmajVIbXVlejhpTEdQQzdIS0FHd1N0VSsxUVJEN1JaQ0h6ZEN5N2J4SHI5aTBsOEZPSXYzZmRROVZZTW5YZXNVNWowSFU3ZzdndGVuTW9Ib1lJWFFaSG9aM05VdUpvVUNJemY2enRKdk55MlZjbGlGYzByS3NZUGNTZG5WbjF3THhTWmV1MVhZbjV0eTdrUGd3MzZNV1lvbEczZGN5eG44WVkzUkltcWRGY0tlUVVrb2d3MDh6QUh0SHROaUUrNEtJcmhuMEF3dEFKcHVwVitrWVRNbnloc1lWVWdTK2hRZGJHR3F1TW1xeDhHVFFvTEVqNmgzV1Bqa0NqOEo0REx5OGpTK3loNTRiYzUvN0cwMUlIMjRDQjIwbUQzTWY3WEl6Z2g0TjMyV2I5WnE3bkJTZkFTR2M1bSsxTE1nNC91aUNoMlNhcnVRNHdicEFyVnNZbVN1IiwiZGF0YWtleSI6IkFRRUJBSGgrZFMrQmxOdTBOeG5Yd293YklMczExNXlqZCtMTkFaaEJMWnN1bk94azNBQUFBSDR3ZkFZSktvWklodmNOQVFjR29HOHdiUUlCQURCb0Jna3Foa2lHOXcwQkJ3RXdIZ1lKWUlaSUFXVURCQUV1TUJFRURLMzNsYmhhOFBBTng0ZWVLUUlCRUlBN2JQQU9DT0x2akpjSDV1MlJjeXZPalV4YWdqVGswckQxVjFueUpUc1ZhQ2Vvb0o0azdOQ3dhOW5mcEVqRmtMU1ExNC80SnNWbnBRRVZsVVU9IiwidmVyc2lvbiI6IjIiLCJ0eXBlIjoiREFUQV9LRVkiLCJleHBpcmF0aW9uIjoxNTE4ODMxODY1fQ== https://113243505441.dkr.ecr.eu-west-1.amazonaws.com
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
   build:
     commands:
-      - docker build -t ysaecs
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
   post_build:
     commands:
-      - docker tag ysaecs:latest 113243505441.dkr.ecr.eu-west-1.amazonaws.com/ysaecs:latest
-      - docker push 113243505441.dkr.ecr.eu-west-1.amazonaws.com/ysaecs:latest
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.eu-west-1.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.eu-west-1.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
